@@ -38,9 +38,8 @@ public class CloudClient {
                     @Override
                     protected void initChannel(SocketChannel channel) throws Exception {
                         channel.pipeline().addLast(
-                            new ObjectEncoder(),
-                            new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
                             new ClientAuthHandler(),
+                            new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
                             new ClientCommandHandler(CloudClient.this)
                         );
                     }

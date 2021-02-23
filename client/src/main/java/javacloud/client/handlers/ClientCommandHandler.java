@@ -4,8 +4,10 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import javacloud.client.ClientAuth;
 import javacloud.client.CloudClient;
+import javacloud.shared.request.RequestLs;
 import javacloud.shared.response.Response;
 import javacloud.shared.response.ResponseAuth;
+import javacloud.shared.response.ResponseLs;
 import javacloud.shared.utils.StringUtils;
 
 public class ClientCommandHandler extends SimpleChannelInboundHandler<Response> {
@@ -20,7 +22,7 @@ public class ClientCommandHandler extends SimpleChannelInboundHandler<Response> 
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, Response response) throws Exception {
+    protected void channelRead0(ChannelHandlerContext context, Response response) throws Exception {
         switch (response.getCommand()) {
             case AUTH: {
                 ResponseAuth responseAuth = (ResponseAuth) response;
@@ -30,9 +32,15 @@ public class ClientCommandHandler extends SimpleChannelInboundHandler<Response> 
                 }
 
                 ClientAuth.setToken(responseAuth.getToken());
+
+                context.writeAndFlush(new RequestLs("./"));
+
+                break;
             }
             case LS: {
+                System.out.println(((ResponseLs)response).getFiles());
 
+                break;
             }
         }
     }
