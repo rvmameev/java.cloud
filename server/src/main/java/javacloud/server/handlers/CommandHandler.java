@@ -21,6 +21,10 @@ public class CommandHandler extends SimpleChannelInboundHandler<Request> {
     }
 
     @Override
+    public void channelActive(ChannelHandlerContext context) throws Exception {
+    }
+
+    @Override
     protected void channelRead0(ChannelHandlerContext context, Request request) throws Exception {
         switch (request.getCommand()) {
             case LS: {
@@ -36,6 +40,8 @@ public class CommandHandler extends SimpleChannelInboundHandler<Request> {
     }
 
     private void sendResponseLs(ChannelHandlerContext context, RequestLs request) throws IOException {
+        // TODO get user from request token
+
         Path userPath = Paths.get(server.getServerConfig().getServerDataDirectory());
 
         File dir = Paths.get(userPath.toString(), request.getPath()).toFile();

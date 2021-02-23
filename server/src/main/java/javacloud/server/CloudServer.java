@@ -1,6 +1,7 @@
 package javacloud.server;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
@@ -10,6 +11,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
+import io.netty.util.AttributeKey;
+import javacloud.server.handlers.AuthHandler;
 import javacloud.server.handlers.CommandHandler;
 
 import java.io.IOException;
@@ -47,17 +50,17 @@ public class CloudServer {
                         channel.pipeline().addLast(
                             new ObjectEncoder(),
                             new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
-                            new CommandHandler(CloudServer.this)
+                            new AuthHandler(CloudServer.this)
                         );
                     }
                 });
 
-            ChannelFuture future = bootstrap.bind(serverConfig.getPort()).sync();
+            Channel channel = bootstrap.bind(serverConfig.getPort()).sync().channel();
 
-            System.out.println("Server started on " + future.channel().localAddress());
+            System.out.println("Server started on " + channel.localAddress());
 
-            future.channel().closeFuture().sync();
-        } catch (InterruptedException | IOException e) {
+            channel.closeFuture().sync();
+        } catch (Exception e) {
             System.out.println("Server was broken");
         } finally {
             worker.shutdownGracefully();

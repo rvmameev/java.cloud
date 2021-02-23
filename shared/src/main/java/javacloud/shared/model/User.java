@@ -1,5 +1,7 @@
 package javacloud.shared.model;
 
+import javacloud.shared.utils.StringUtils;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -7,11 +9,7 @@ public class User implements Serializable {
     private final String userName;
 
     public User(String userName) {
-        if (userName == null || userName.trim().length() == 0) {
-            throw new NullPointerException("userName");
-        }
-
-        this.userName = userName;
+        this.userName = Objects.requireNonNull(StringUtils.NullIfEmpty(userName));
     }
 
     @Override

@@ -28,4 +28,6 @@ public abstract class Response extends CommandMessage {
     {
         return errors.size() > 0;
     }
+
+
 }
