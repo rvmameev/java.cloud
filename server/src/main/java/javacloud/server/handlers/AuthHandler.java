@@ -7,6 +7,7 @@ import javacloud.shared.model.Command;
 import javacloud.shared.request.Request;
 import javacloud.shared.request.RequestAuth;
 import javacloud.shared.response.ResponseAuth;
+import javacloud.shared.utils.StringUtils;
 
 public class AuthHandler extends SimpleChannelInboundHandler<Request> {
     private final CloudServer server;
@@ -23,9 +24,9 @@ public class AuthHandler extends SimpleChannelInboundHandler<Request> {
 
             RequestAuth requestAuth = (RequestAuth) request;
 
-            if (requestAuth.getUserName().equals("user1") && requestAuth.getPassword().equals("pass1")) {
-                token = "token1";
+            token = server.getToken(requestAuth.getUserName(), requestAuth.getPassword());
 
+            if (!StringUtils.isNullOrEmpty(token)) {
                 context.pipeline().remove(AuthHandler.class);
                 context.pipeline().addLast(new CommandHandler(server));
                 context.pipeline().get(CommandHandler.class).channelActive(context);

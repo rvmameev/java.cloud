@@ -40,15 +40,13 @@ public class CommandHandler extends SimpleChannelInboundHandler<Request> {
     }
 
     private void sendResponseLs(ChannelHandlerContext context, RequestLs request) throws IOException {
-        // TODO get user from request token
+        Path userPath = Paths.get(server.getUserPath(request.getToken()));
 
-        Path userPath = Paths.get(server.getServerConfig().getServerDataDirectory());
-
-        File dir = Paths.get(userPath.toString(), request.getPath()).toFile();
+        File userDir = Paths.get(userPath.toString(), request.getPath()).toFile();
 
         ResponseLs response = new ResponseLs();
 
-        File[] files = dir.listFiles();
+        File[] files = userDir.listFiles();
 
         if (files != null) {
             for (File file : files) {

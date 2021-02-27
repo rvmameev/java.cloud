@@ -2,7 +2,6 @@ package javacloud.server;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -11,11 +10,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
-import io.netty.util.AttributeKey;
 import javacloud.server.handlers.AuthHandler;
-import javacloud.server.handlers.CommandHandler;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,8 +24,7 @@ public class CloudServer {
         this.serverConfig = Objects.requireNonNull(serverConfig);
     }
 
-    public void run()
-    {
+    public void run() {
         EventLoopGroup worker = new NioEventLoopGroup();
 
         try {
@@ -69,5 +64,17 @@ public class CloudServer {
 
     public ServerConfig getServerConfig() {
         return serverConfig;
+    }
+
+    public String getToken(String username, String password) {
+        if (username.equals("user1") && password.equals("pass1")) {
+            return "token1";
+        }
+
+        return null;
+    }
+
+    public String getUserPath(String token) {
+        return Paths.get(serverConfig.getServerDataDirectory(), "user1").toString();
     }
 }

@@ -9,23 +9,22 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
-import io.netty.handler.codec.serialization.ObjectEncoder;
-import javacloud.client.events.RunEvents;
+import javacloud.client.events.ClientEvents;
 import javacloud.client.handlers.ClientAuthHandler;
 import javacloud.client.handlers.ClientCommandHandler;
 
+import java.util.Objects;
+
 public class CloudClient {
     private final ClientConfig config;
+    private final ClientEvents clientEvents;
 
-    public CloudClient(ClientConfig config) {
-        this.config = config;
+    public CloudClient(ClientConfig config, ClientEvents clientEvents) {
+        this.config = Objects.requireNonNull(config);
+        this.clientEvents = Objects.requireNonNull(clientEvents);
     }
 
     public void run() {
-        run(null);
-    }
-
-    public void run(RunEvents runEvents) {
         EventLoopGroup worker = new NioEventLoopGroup();
 
         try {
@@ -47,9 +46,7 @@ public class CloudClient {
 
             Channel channel = bootstrap.connect(config.getServer(), config.getPort()).sync().channel();
 
-            if (runEvents != null) {
-                runEvents.afterConnect(channel);
-            }
+            clientEvents.afterConnect(channel);
 
             channel.closeFuture().sync();
         } catch (Exception e) {
@@ -61,5 +58,9 @@ public class CloudClient {
 
     public ClientConfig getConfig() {
         return config;
+    }
+
+    public ClientEvents getClientEvents() {
+        return clientEvents;
     }
 }
