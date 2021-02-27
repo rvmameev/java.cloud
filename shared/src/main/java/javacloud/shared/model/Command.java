@@ -2,8 +2,7 @@ package javacloud.shared.model;
 
 import java.io.Serializable;
 
-public enum Command implements Serializable
-{
+public enum Command implements Serializable {
     AUTH("/auth"),
     LS("/ls"),
     GET_FILE("/get_file"),
@@ -11,13 +10,11 @@ public enum Command implements Serializable
 
     private final String command;
 
-    Command(String command)
-    {
+    Command(String command) {
         this.command = command;
     }
 
-    public String getCommand()
-    {
+    public String getCommand() {
         return command;
     }
 }

@@ -2,6 +2,7 @@ package javacloud.shared.response;
 
 import javacloud.shared.model.CloudFile;
 import javacloud.shared.model.Command;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,8 +14,7 @@ public class ResponseLs extends Response {
         super(Command.LS);
     }
 
-    public void addFile(CloudFile file)
-    {
+    public void addFile(CloudFile file) {
         files.add(file);
     }
 

@@ -9,7 +9,7 @@ public class User implements Serializable {
     private final String userName;
 
     public User(String userName) {
-        this.userName = Objects.requireNonNull(StringUtils.NullIfEmpty(userName));
+        this.userName = Objects.requireNonNull(StringUtils.nullIfEmpty(userName));
     }
 
     @Override

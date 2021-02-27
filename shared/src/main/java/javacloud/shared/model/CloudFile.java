@@ -4,22 +4,22 @@ import java.io.Serializable;
 import java.nio.file.Paths;
 
 public class CloudFile implements Serializable {
-    private String localPath;
-    private long fileSize;
-    private boolean isDirectory;
+    private final String relativePath;
+    private final long fileSize;
+    private final boolean isDirectory;
 
-    public CloudFile(String localPath, long fileSize, boolean isDirectory) {
-        this.localPath = localPath;
+    public CloudFile(String relativePath, long fileSize, boolean isDirectory) {
+        this.relativePath = relativePath;
         this.fileSize = fileSize;
         this.isDirectory = isDirectory;
     }
 
     public String path(String basePath) {
-        return Paths.get(basePath, localPath).toAbsolutePath().toString();
+        return Paths.get(basePath, relativePath).toAbsolutePath().toString();
     }
 
-    public String getLocalPath() {
-        return localPath;
+    public String getRelativePath() {
+        return relativePath;
     }
 
     public long getFileSize() {
@@ -33,7 +33,7 @@ public class CloudFile implements Serializable {
     @Override
     public String toString() {
         return "CloudFile{" +
-            "localPath='" + localPath + '\'' +
+            "localPath='" + relativePath + '\'' +
             ", fileSize=" + fileSize +
             ", isDirectory=" + isDirectory +
             '}';

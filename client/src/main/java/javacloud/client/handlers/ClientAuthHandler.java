@@ -12,7 +12,7 @@ public class ClientAuthHandler extends ObjectEncoder {
     @Override
     protected void encode(ChannelHandlerContext ctx, Serializable msg, ByteBuf out) throws Exception {
         if (msg instanceof Request) {
-            ((Request)msg).setToken(ClientAuth.getToken());
+            ((Request) msg).setToken(ClientAuth.getToken());
         }
 
         super.encode(ctx, msg, out);

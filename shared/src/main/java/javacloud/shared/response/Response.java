@@ -2,11 +2,12 @@ package javacloud.shared.response;
 
 import javacloud.shared.model.Command;
 import javacloud.shared.model.CommandMessage;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Response extends CommandMessage {
-    private List<String> errors;
+    private final List<String> errors;
 
     public Response(Command command) {
         super(command);
@@ -19,13 +20,11 @@ public abstract class Response extends CommandMessage {
         return this;
     }
 
-    public List<String> getErrors()
-    {
+    public List<String> getErrors() {
         return new ArrayList<>(errors);
     }
 
-    public boolean hasErrors()
-    {
+    public boolean hasErrors() {
         return errors.size() > 0;
     }
 

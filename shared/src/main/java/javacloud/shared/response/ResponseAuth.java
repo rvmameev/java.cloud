@@ -2,7 +2,7 @@ package javacloud.shared.response;
 
 import javacloud.shared.model.Command;
 
-public class ResponseAuth extends Response{
+public class ResponseAuth extends Response {
 
     private final String token;
 
