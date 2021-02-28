@@ -3,8 +3,8 @@ package javacloud.server;
 public class ServerConfig {
 
     private int port;
-
     private String serverDataDirectory;
+    private int filePacketSize;
 
     private ServerConfig() {
     }
@@ -17,6 +17,7 @@ public class ServerConfig {
         // load config
         instance.port = 1180;
         instance.serverDataDirectory = "./data";
+        instance.filePacketSize = 10;
     }
 
     public static ServerConfig get() {
@@ -29,5 +30,9 @@ public class ServerConfig {
 
     public String getServerDataDirectory() {
         return serverDataDirectory;
+    }
+
+    public int getFilePacketSize() {
+        return filePacketSize;
     }
 }

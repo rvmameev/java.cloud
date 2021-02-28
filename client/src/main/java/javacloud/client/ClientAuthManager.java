@@ -1,10 +1,10 @@
 package javacloud.client;
 
-public class ClientAuth {
+public class ClientAuthManager {
     private static String token;
 
     synchronized public static void setToken(String token) {
-        ClientAuth.token = token;
+        ClientAuthManager.token = token;
     }
 
     synchronized public static String getToken() {

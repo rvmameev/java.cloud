@@ -1,18 +1,20 @@
 package javacloud.client.events;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
 import javacloud.shared.response.ResponseAuth;
+import javacloud.shared.response.ResponseGetFile;
 import javacloud.shared.response.ResponseLs;
+import javacloud.shared.response.ResponsePutFile;
 
 public interface ClientEvents {
     default void afterConnect(Channel channel) {
     }
 
-    default void onCommandAuth(ChannelHandlerContext context, ResponseAuth response) {
-    }
+    void receiveCommandAuth(Channel channel, ResponseAuth response) throws Exception;
 
-    default void onCommandLs(ChannelHandlerContext context, ResponseLs response) {
+    void receiveCommandLs(Channel channel, ResponseLs response);
 
-    }
+    void receiveCommandGetFile(Channel channel, ResponseGetFile response);
+
+    void receiveCommandPutFile(Channel channel, ResponsePutFile response);
 }

@@ -12,6 +12,7 @@ import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import javacloud.server.handlers.AuthHandler;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -74,7 +75,13 @@ public class CloudServer {
         return null;
     }
 
-    public String getUserPath(String token) {
-        return Paths.get(serverConfig.getServerDataDirectory(), "user1").toString();
+    public String getUserPath(String token) throws IOException {
+        Path path = Paths.get(serverConfig.getServerDataDirectory(), "user1");
+
+        if (!Files.exists(path)) {
+            Files.createDirectory(path);
+        }
+
+        return path.toString();
     }
 }

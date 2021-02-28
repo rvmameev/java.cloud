@@ -13,15 +13,21 @@ import javacloud.client.events.ClientEvents;
 import javacloud.client.handlers.ClientAuthHandler;
 import javacloud.client.handlers.ClientCommandHandler;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 public class CloudClient {
     private final ClientConfig config;
     private final ClientEvents clientEvents;
 
-    public CloudClient(ClientConfig config, ClientEvents clientEvents) {
+    public CloudClient(ClientConfig config, ClientEvents clientEvents) throws IOException {
         this.config = Objects.requireNonNull(config);
         this.clientEvents = Objects.requireNonNull(clientEvents);
+
+        initClientDirectory();
     }
 
     public void run() {
@@ -62,5 +68,13 @@ public class CloudClient {
 
     public ClientEvents getClientEvents() {
         return clientEvents;
+    }
+
+    private void initClientDirectory() throws IOException {
+        Path dataPath = Paths.get(config.getClientDirectory());
+
+        if (!Files.exists(dataPath)) {
+            Files.createDirectory(dataPath);
+        }
     }
 }

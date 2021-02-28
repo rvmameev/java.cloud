@@ -1,27 +1,31 @@
 package javacloud.shared.model;
 
+import java.io.File;
 import java.io.RandomAccessFile;
+import java.io.Serializable;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
-public class CloudFilePacket {
-    private final String relativePath;
-    private final int fileSize;
+public class CloudFilePacket implements Serializable {
+    private final String relativeFilePath;
+    private final long fileSize;
     private final int packetNumber;
     private final int packetSize;
+    private long packetCount;
     private byte[] packet;
 
-    public CloudFilePacket(String relativePath, int fileSize, int packetNumber, int packetSize) {
+    public CloudFilePacket(String relativeFilePath, long fileSize, int packetNumber, int packetSize) {
 
-        this.relativePath = relativePath;
+        this.relativeFilePath = relativeFilePath;
         this.fileSize = fileSize;
         this.packetNumber = packetNumber;
         this.packetSize = packetSize;
+        this.packetCount = packetSize == 0 ? 0 : (fileSize - 1) / packetSize + 1;
         this.packet = new byte[packetSize];
     }
 
     public void readPacket(String basePath) {
-        String filePath = Paths.get(basePath, relativePath).toString();
+        String filePath = Paths.get(basePath, relativeFilePath).toString();
 
         try (RandomAccessFile file = new RandomAccessFile(filePath, "r")) {
             file.seek(packetNumber * packetSize);
@@ -35,21 +39,28 @@ public class CloudFilePacket {
     }
 
     public void writePacket(String basePath) {
-        String filePath = Paths.get(basePath, relativePath).toString();
+        String filePath = Paths.get(basePath, relativeFilePath).toString();
 
-        try (RandomAccessFile file = new RandomAccessFile(filePath, "rw")) {
-            file.seek(packetNumber * packetSize);
-            file.write(packet);
+        File file = new File(filePath);
+        File dir = file.getParentFile();
+
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(filePath, "rw")) {
+            randomAccessFile.seek(packetNumber * packetSize);
+            randomAccessFile.write(packet);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public String getRelativePath() {
-        return relativePath;
+    public String getRelativeFilePath() {
+        return relativeFilePath;
     }
 
-    public int getFileSize() {
+    public long getFileSize() {
         return fileSize;
     }
 
@@ -59,6 +70,10 @@ public class CloudFilePacket {
 
     public int getPacketSize() {
         return packetSize;
+    }
+
+    public long getPacketCount() {
+        return packetCount;
     }
 
     public byte[] getPacket() {

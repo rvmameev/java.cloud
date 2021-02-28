@@ -4,6 +4,7 @@ public class ClientConfig {
     private String server;
     private int port;
     private String clientDirectory;
+    private int filePacketSize;
 
     private String username;
     private String password;
@@ -16,7 +17,8 @@ public class ClientConfig {
         // load config
         instance.server = "localhost";
         instance.port = 1180;
-        instance.clientDirectory = "./client";
+        instance.clientDirectory = "./client-data";
+        instance.filePacketSize = 41;
 
         instance.username = "user1";
         instance.password = "pass1";
@@ -39,6 +41,10 @@ public class ClientConfig {
 
     public String getClientDirectory() {
         return clientDirectory;
+    }
+
+    public int getFilePacketSize() {
+        return filePacketSize;
     }
 
     public String getUsername() {

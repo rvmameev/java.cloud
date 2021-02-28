@@ -2,12 +2,9 @@ package javacloud.client.handlers;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import javacloud.client.ClientAuth;
 import javacloud.client.CloudClient;
-import javacloud.shared.response.Response;
-import javacloud.shared.response.ResponseAuth;
-import javacloud.shared.response.ResponseLs;
-import javacloud.shared.utils.StringUtils;
+import javacloud.client.events.ClientEvents;
+import javacloud.shared.response.*;
 
 import java.util.Objects;
 
@@ -19,29 +16,27 @@ public class ClientCommandHandler extends SimpleChannelInboundHandler<Response> 
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-    }
-
-    @Override
     protected void channelRead0(ChannelHandlerContext context, Response response) throws Exception {
+        ClientEvents clientEvents = client.getClientEvents();
+
         switch (response.getCommand()) {
             case AUTH: {
-                ResponseAuth responseAuth = (ResponseAuth) response;
-
-                if (StringUtils.isNullOrEmpty(responseAuth.getToken())) {
-                    throw new Exception("Auth error");
-                }
-
-                ClientAuth.setToken(responseAuth.getToken());
-
-                client.getClientEvents().onCommandAuth(context, responseAuth);
+                clientEvents.receiveCommandAuth(context.channel(), (ResponseAuth) response);
 
                 break;
             }
             case LS: {
-                client.getClientEvents().onCommandLs(context, (ResponseLs) response);
+                clientEvents.receiveCommandLs(context.channel(), (ResponseLs) response);
 
                 break;
+            }
+            case GET_FILE: {
+                clientEvents.receiveCommandGetFile(context.channel(), (ResponseGetFile) response);
+
+                break;
+            }
+            case PUT_FILE: {
+                clientEvents.receiveCommandPutFile(context.channel(), (ResponsePutFile) response);
             }
         }
     }
