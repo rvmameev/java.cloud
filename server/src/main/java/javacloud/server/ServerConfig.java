@@ -16,7 +16,7 @@ public class ServerConfig {
 
         // load config
         instance.port = 1180;
-        instance.serverDataDirectory = "./data";
+        instance.serverDataDirectory = "./data/server";
         instance.filePacketSize = 10;
     }
 

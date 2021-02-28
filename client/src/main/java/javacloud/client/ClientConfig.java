@@ -17,7 +17,7 @@ public class ClientConfig {
         // load config
         instance.server = "localhost";
         instance.port = 1180;
-        instance.clientDirectory = "./client-data";
+        instance.clientDirectory = "./data/client";
         instance.filePacketSize = 41;
 
         instance.username = "user1";
