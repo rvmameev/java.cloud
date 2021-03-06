@@ -2,7 +2,7 @@ package javacloud.client.tests;
 
 import io.netty.channel.Channel;
 import javacloud.client.ClientConfig;
-import javacloud.client.events.ClientEvents;
+import javacloud.client.events.ClientEventHandler;
 import javacloud.shared.model.CloudFilePacket;
 import javacloud.shared.request.RequestAuth;
 import javacloud.shared.request.RequestGetFile;
@@ -17,11 +17,11 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.stream.StreamSupport;
 
-public class TestClientEvents implements ClientEvents {
+public class TestClientEventHandler implements ClientEventHandler {
     private final ClientConfig clientConfig;
-    private final ClientEvents innerEvents;
+    private final ClientEventHandler innerEvents;
 
-    public TestClientEvents(ClientConfig clientConfig, ClientEvents innerEvents) {
+    public TestClientEventHandler(ClientConfig clientConfig, ClientEventHandler innerEvents) {
         this.innerEvents = innerEvents;
         this.clientConfig = clientConfig;
     }
@@ -34,6 +34,11 @@ public class TestClientEvents implements ClientEvents {
 
         System.out.println("Auth to server");
         channel.writeAndFlush(new RequestAuth(clientConfig.getUsername(), clientConfig.getPassword()));
+    }
+
+    @Override
+    public void afterDisconnect(Channel channel) {
+
     }
 
     @Override

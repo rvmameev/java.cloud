@@ -9,7 +9,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
-import javacloud.client.events.ClientEvents;
+import javacloud.client.events.ClientEventHandler;
 import javacloud.client.handlers.ClientAuthHandler;
 import javacloud.client.handlers.ClientCommandHandler;
 
@@ -21,43 +21,54 @@ import java.util.Objects;
 
 public class CloudClient {
     private final ClientConfig config;
-    private final ClientEvents clientEvents;
+    private final ClientEventHandler clientEventHandler;
+    private Channel channel;
+    private Object channelLocker = new Object();
 
-    public CloudClient(ClientConfig config, ClientEvents clientEvents) throws IOException {
+    public CloudClient(ClientConfig config, ClientEventHandler clientEventHandler) throws IOException {
         this.config = Objects.requireNonNull(config);
-        this.clientEvents = Objects.requireNonNull(clientEvents);
+        this.clientEventHandler = Objects.requireNonNull(clientEventHandler);
 
         initClientDirectory();
     }
 
-    public void run() {
+    public void connect() {
         EventLoopGroup worker = new NioEventLoopGroup();
 
         try {
 
-            Bootstrap bootstrap = new Bootstrap();
-            bootstrap.group(worker)
-                .channel(NioSocketChannel.class)
-                .handler(new ChannelInitializer<SocketChannel>() {
+            synchronized (channelLocker) {
+                Bootstrap bootstrap = new Bootstrap();
+                bootstrap.group(worker)
+                    .channel(NioSocketChannel.class)
+                    .handler(new ChannelInitializer<SocketChannel>() {
 
-                    @Override
-                    protected void initChannel(SocketChannel channel) throws Exception {
-                        channel.pipeline().addLast(
-                            new ClientAuthHandler(),
-                            new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
-                            new ClientCommandHandler(CloudClient.this)
-                        );
-                    }
-                });
+                        @Override
+                        protected void initChannel(SocketChannel channel) throws Exception {
+                            channel.pipeline().addLast(
+                                new ClientAuthHandler(),
+                                new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
+                                new ClientCommandHandler(CloudClient.this)
+                            );
+                        }
+                    });
 
-            Channel channel = bootstrap.connect(config.getServer(), config.getPort()).sync().channel();
+                channel = bootstrap.connect(config.getServer(), config.getPort()).sync().channel();
+            }
 
-            clientEvents.afterConnect(channel);
+            clientEventHandler.afterConnect(channel);
 
             channel.closeFuture().sync();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            synchronized (channelLocker) {
+                if (channel != null){
+                    clientEventHandler.afterDisconnect(channel);
+                }
+
+                channel = null;
+            }
             worker.shutdownGracefully();
         }
     }
@@ -66,8 +77,26 @@ public class CloudClient {
         return config;
     }
 
-    public ClientEvents getClientEvents() {
-        return clientEvents;
+    public ClientEventHandler getClientEvents() {
+        return clientEventHandler;
+    }
+
+    public Channel getChannel() {
+        synchronized (channelLocker) {
+            return channel;
+        }
+    }
+
+    public void disconnect() {
+        synchronized (channelLocker) {
+            if (channel != null) {
+                channel.close();
+            }
+        }
+    }
+
+    public boolean isConnected() {
+        return getChannel() != null;
     }
 
     private void initClientDirectory() throws IOException {

@@ -6,9 +6,10 @@ import javacloud.shared.response.ResponseGetFile;
 import javacloud.shared.response.ResponseLs;
 import javacloud.shared.response.ResponsePutFile;
 
-public interface ClientEvents {
-    default void afterConnect(Channel channel) {
-    }
+public interface ClientEventHandler {
+    void afterConnect(Channel channel);
+
+    void afterDisconnect(Channel channel);
 
     void receiveCommandAuth(Channel channel, ResponseAuth response) throws Exception;
 

@@ -3,7 +3,7 @@ package javacloud.client.handlers;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import javacloud.client.CloudClient;
-import javacloud.client.events.ClientEvents;
+import javacloud.client.events.ClientEventHandler;
 import javacloud.shared.response.*;
 
 import java.util.Objects;
@@ -17,26 +17,26 @@ public class ClientCommandHandler extends SimpleChannelInboundHandler<Response> 
 
     @Override
     protected void channelRead0(ChannelHandlerContext context, Response response) throws Exception {
-        ClientEvents clientEvents = client.getClientEvents();
+        ClientEventHandler clientEventHandler = client.getClientEvents();
 
         switch (response.getCommand()) {
             case AUTH: {
-                clientEvents.receiveCommandAuth(context.channel(), (ResponseAuth) response);
+                clientEventHandler.receiveCommandAuth(context.channel(), (ResponseAuth) response);
 
                 break;
             }
             case LS: {
-                clientEvents.receiveCommandLs(context.channel(), (ResponseLs) response);
+                clientEventHandler.receiveCommandLs(context.channel(), (ResponseLs) response);
 
                 break;
             }
             case GET_FILE: {
-                clientEvents.receiveCommandGetFile(context.channel(), (ResponseGetFile) response);
+                clientEventHandler.receiveCommandGetFile(context.channel(), (ResponseGetFile) response);
 
                 break;
             }
             case PUT_FILE: {
-                clientEvents.receiveCommandPutFile(context.channel(), (ResponsePutFile) response);
+                clientEventHandler.receiveCommandPutFile(context.channel(), (ResponsePutFile) response);
             }
         }
     }

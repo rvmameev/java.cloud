@@ -2,8 +2,8 @@ package javacloud.client.tests;
 
 import javacloud.client.ClientConfig;
 import javacloud.client.CloudClient;
-import javacloud.client.events.ClientEvents;
-import javacloud.client.events.ClientEventsImpl;
+import javacloud.client.events.ClientEventHandler;
+import javacloud.client.events.ClientEventHandlerImpl;
 
 import java.io.IOException;
 
@@ -11,12 +11,12 @@ public class Test {
     public static void main(String[] args) throws IOException {
         ClientConfig config = ClientConfig.get();
 
-        ClientEvents clientEvents = new ClientEventsImpl(config);
+        ClientEventHandler clientEventHandler = new ClientEventHandlerImpl(config);
 
-        ClientEvents testClientEvents = new TestClientEvents(config, clientEvents);
+        ClientEventHandler testClientEventHandler = new TestClientEventHandler(config, clientEventHandler);
 
-        CloudClient client = new CloudClient(config, testClientEvents);
+        CloudClient client = new CloudClient(config, testClientEventHandler);
 
-        client.run();
+        client.connect();
     }
 }

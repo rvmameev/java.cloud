@@ -9,11 +9,21 @@ import javacloud.shared.response.ResponseLs;
 import javacloud.shared.response.ResponsePutFile;
 import javacloud.shared.utils.StringUtils;
 
-public class ClientEventsImpl implements ClientEvents {
+public class ClientEventHandlerImpl implements ClientEventHandler {
     private final ClientConfig config;
 
-    public ClientEventsImpl(ClientConfig config) {
+    public ClientEventHandlerImpl(ClientConfig config) {
         this.config = config;
+    }
+
+    @Override
+    public void afterConnect(Channel channel) {
+
+    }
+
+    @Override
+    public void afterDisconnect(Channel channel) {
+
     }
 
     @Override
