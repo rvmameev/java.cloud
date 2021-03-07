@@ -10,13 +10,16 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
+import javacloud.server.db.SQLHandler;
 import javacloud.server.handlers.AuthHandler;
+import javacloud.shared.model.User;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
+import java.util.UUID;
 
 public class CloudServer {
     private final ServerConfig serverConfig;
@@ -26,6 +29,8 @@ public class CloudServer {
     }
 
     public void run() {
+        SQLHandler.connect();
+
         EventLoopGroup worker = new NioEventLoopGroup();
 
         try {
@@ -60,6 +65,7 @@ public class CloudServer {
             System.out.println("Server was broken");
         } finally {
             worker.shutdownGracefully();
+            SQLHandler.disconnect();
         }
     }
 
@@ -68,8 +74,10 @@ public class CloudServer {
     }
 
     public String getToken(String username, String password) {
-        if (username.equals("user1") && password.equals("pass1")) {
-            return "token1";
+        User user = SQLHandler.getUser(username, password);
+
+        if (user != null) {
+            return UUID.randomUUID().toString();
         }
 
         return null;

@@ -1,6 +1,5 @@
 package javacloud.client;
 
-import io.netty.channel.Channel;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -17,11 +16,7 @@ public class ClientApp extends Application {
         primaryStage.setTitle("Cloud");
         primaryStage.setResizable(false);
         primaryStage.setOnCloseRequest(req -> {
-            Channel channel = controller.getCloudClient().getChannel();
-
-            if (channel != null) {
-                channel.close();
-            }
+            controller.actionClose();
         });
         primaryStage.show();
     }

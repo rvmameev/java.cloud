@@ -1,5 +1,6 @@
 package javacloud.client;
 
+import io.netty.channel.Channel;
 import javacloud.client.events.ClientEventHandler;
 import javacloud.client.events.ControllerEventHandler;
 import javacloud.shared.model.CloudFile;
@@ -130,6 +131,16 @@ public class ClientController implements Initializable {
             addLogText(String.format("Send file packet '%s' %d/%d", relativeFilePath, i + 1, filePacketCount));
         }
     }
+
+    public void actionClose() {
+        Channel channel = cloudClient.getChannel();
+
+        if (channel != null) {
+            channel.close();
+        }
+
+        ((Stage) logText.getScene().getWindow()).close();
+    }
     //endregion
 
     //region Control actions
@@ -154,7 +165,7 @@ public class ClientController implements Initializable {
     }
 
     public void menuQuit(ActionEvent actionEvent) {
-        ((Stage) logText.getScene().getWindow()).close();
+        actionClose();
     }
     //endregion
 

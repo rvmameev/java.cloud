@@ -14,7 +14,7 @@ public class ClientConfig {
     static {
         instance = new ClientConfig();
 
-        // load config
+        // TODO load config from properties file
         instance.server = "localhost";
         instance.port = 1180;
         instance.clientDirectory = "./data/client";

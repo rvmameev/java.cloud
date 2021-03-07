@@ -6,9 +6,11 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class User implements Serializable {
+    private final int id;
     private final String userName;
 
-    public User(String userName) {
+    public User(int id, String userName) {
+        this.id = id;
         this.userName = Objects.requireNonNull(StringUtils.nullIfEmpty(userName));
     }
 
