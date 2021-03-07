@@ -9,6 +9,7 @@ import javacloud.shared.response.ResponseGetFile;
 import javacloud.shared.response.ResponseLs;
 import javacloud.shared.response.ResponsePutFile;
 import javacloud.shared.utils.StringUtils;
+import javafx.application.Platform;
 
 import java.util.Objects;
 
@@ -25,52 +26,62 @@ public class ControllerEventHandler extends ClientEventDefaultHandler {
     public void afterConnect(Channel channel) {
         super.afterConnect(channel);
 
-        controller.addLogText("Connected to " + channel.remoteAddress());
-
-        controller.actionAuthenticate();
+        Platform.runLater(() -> {
+            controller.addLogText("Connected to " + channel.remoteAddress());
+            controller.actionAuthenticate();
+        });
     }
 
     @Override
     public void afterDisconnect(Channel channel) {
         super.afterDisconnect(channel);
 
-        controller.addLogText("Disconnected");
+        Platform.runLater(() -> {
+            controller.addLogText("Disconnected");
+        });
     }
 
     @Override
     public void receiveCommandAuth(Channel channel, ResponseAuth response) {
         super.receiveCommandAuth(channel, response);
 
-        if (StringUtils.isNullOrEmpty(response.getToken())) {
-            controller.addLogText("Authentication error");
-        } else {
-            controller.addLogText("Authentication successful");
-
-            controller.actionUpdateServerFiles();
-        }
+        Platform.runLater(() -> {
+            if (StringUtils.isNullOrEmpty(response.getToken())) {
+                controller.addLogText("Authentication error");
+            } else {
+                controller.addLogText("Authentication successful");
+                controller.actionUpdateServerFiles();
+            }
+        });
     }
 
     @Override
     public void receiveCommandLs(Channel channel, ResponseLs response) {
         super.receiveCommandLs(channel, response);
 
-        controller.updateServerFiles(response);
+        Platform.runLater(() -> {
+            controller.addLogText("Updated server file list");
+            controller.updateServerFiles(response);
+        });
     }
 
     @Override
     public void receiveCommandGetFile(Channel channel, ResponseGetFile response) {
         super.receiveCommandGetFile(channel, response);
 
-        CloudFilePacket filePacket = response.getFilePacket();
-
-        controller.addLogText(String.format("Received file packet '%s' %d/%d", filePacket.getRelativeFilePath(), filePacket.getPacketNumber() + 1, filePacket.getPacketCount()));
+        Platform.runLater(() -> {
+            CloudFilePacket filePacket = response.getFilePacket();
+            controller.addLogText(String.format("Received file packet '%s' %d/%d", filePacket.getRelativeFilePath(), filePacket.getPacketNumber() + 1, filePacket.getPacketCount()));
+        });
     }
 
     @Override
     public void receiveCommandPutFile(Channel channel, ResponsePutFile response) {
         super.receiveCommandPutFile(channel, response);
 
-        CloudFilePacket filePacket = response.getFilePacket();
-        controller.addLogText(String.format("Server received file packet '%s' %d/%d", filePacket.getRelativeFilePath(), filePacket.getPacketNumber() + 1, filePacket.getPacketCount()));
+        Platform.runLater(() -> {
+            CloudFilePacket filePacket = response.getFilePacket();
+            controller.addLogText(String.format("Server received file packet '%s' %d/%d", filePacket.getRelativeFilePath(), filePacket.getPacketNumber() + 1, filePacket.getPacketCount()));
+        });
     }
 }

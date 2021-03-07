@@ -12,11 +12,13 @@ import javacloud.shared.request.RequestPutFile;
 import javacloud.shared.response.ResponseLs;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -26,13 +28,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 public class ClientController implements Initializable {
-    public ListView serverList;
-    public ListView clientList;
+    public ListView serverListView;
+    public ListView clientListView;
     public TextArea logText;
     public Label clientPathLabel;
     public Label serverPathLabel;
@@ -40,6 +40,8 @@ public class ClientController implements Initializable {
     private CloudClient cloudClient;
     private SimpleStringProperty clientPath = new SimpleStringProperty("./");
     private SimpleStringProperty serverPath = new SimpleStringProperty("./");
+    private ObservableList<CloudFile> serverList = FXCollections.observableList(new ArrayList<>());
+    private ObservableList<CloudFile> clientList = FXCollections.observableList(new ArrayList<>());
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -53,6 +55,9 @@ public class ClientController implements Initializable {
 
         serverPathLabel.textProperty().bind(serverPath);
         clientPathLabel.textProperty().bind(clientPath);
+
+        serverListView.setItems(serverList);
+        clientListView.setItems(clientList);
 
         updateClientFiles();
     }
@@ -70,6 +75,8 @@ public class ClientController implements Initializable {
         if (cloudClient.isConnected()) {
             cloudClient.getChannel().close();
         }
+
+        serverList.clear();
     }
 
     public void actionAuthenticate() {
@@ -95,7 +102,7 @@ public class ClientController implements Initializable {
             return;
         }
 
-        CloudFile cloudFile = (CloudFile) serverList.getSelectionModel().getSelectedItem();
+        CloudFile cloudFile = (CloudFile) serverListView.getSelectionModel().getSelectedItem();
 
         if (cloudFile == null || cloudFile.isDirectory()) {
             return;
@@ -109,7 +116,7 @@ public class ClientController implements Initializable {
             return;
         }
 
-        CloudFile cloudFile = (CloudFile) clientList.getSelectionModel().getSelectedItem();
+        CloudFile cloudFile = (CloudFile) clientListView.getSelectionModel().getSelectedItem();
 
         if (cloudFile == null || cloudFile.isDirectory()) {
             return;
@@ -167,33 +174,74 @@ public class ClientController implements Initializable {
     public void menuQuit(ActionEvent actionEvent) {
         actionClose();
     }
+
+    public void serverRefreshButtonClick(ActionEvent actionEvent) {
+        actionUpdateServerFiles();
+    }
+
+    public void serverUpButtonClick(ActionEvent actionEvent) {
+        Path parent = Paths.get(serverPath.get()).getParent();
+
+        if (parent == null) {
+            return;
+        }
+
+        serverPath.set(parent.toString());
+
+        actionUpdateServerFiles();
+    }
+
+    public void serverListMouseClicked(MouseEvent mouseEvent) {
+        if (!cloudClient.isAuthenticated()) {
+            return;
+        }
+
+        CloudFile cloudFile = (CloudFile) serverListView.getSelectionModel().getSelectedItem();
+
+        if (cloudFile == null || !cloudFile.isDirectory()) {
+            return;
+        }
+
+        serverPath.set(Paths.get(serverPath.get(), cloudFile.getRelativePath()).toString());
+
+        actionUpdateServerFiles();
+    }
+
+    public void clientRefreshButtonClick(ActionEvent actionEvent) {
+        updateClientFiles();
+    }
+
+    public void clientUpButtonClick(ActionEvent actionEvent) {
+        Path parent = Paths.get(clientPath.get()).getParent();
+
+        if (parent == null) {
+            return;
+        }
+
+        clientPath.set(parent.toString());
+
+        updateClientFiles();
+    }
+
+    public void clientListMouseClicked(MouseEvent mouseEvent) {
+        CloudFile cloudFile = (CloudFile) clientListView.getSelectionModel().getSelectedItem();
+
+        if (cloudFile == null || !cloudFile.isDirectory()) {
+            return;
+        }
+
+        clientPath.set(Paths.get(clientPath.get(), cloudFile.getRelativePath()).toString());
+
+        updateClientFiles();
+    }
     //endregion
 
     public void addLogText(String text) {
         logText.appendText(text + System.lineSeparator());
     }
 
-    public CloudClient getCloudClient() {
-        return cloudClient;
-    }
-
     public void updateClientFiles() {
-        clientList.setItems(FXCollections.observableList(getClientFiles()));
-    }
-
-    public void updateServerFiles(ResponseLs response) {
-        List<CloudFile> list = response.getFiles().stream().map(f -> {
-            Path relativePath = Paths.get(serverPath.get()).relativize(Paths.get(f.getRelativePath()));
-            return new CloudFile(relativePath.toString(), f.getFileSize(), f.isDirectory());
-        }).collect(Collectors.toList());
-
-        list.sort(getCloudFileComparator());
-
-        serverList.setItems(FXCollections.observableList(list));
-    }
-
-    private List<CloudFile> getClientFiles() {
-        List<CloudFile> fileList = new ArrayList<>();
+        clientList.clear();
 
         File dir = Paths.get(cloudClient.getConfig().getClientDirectory(), clientPath.get()).toFile();
 
@@ -201,13 +249,22 @@ public class ClientController implements Initializable {
 
         if (files != null) {
             for (File file : files) {
-                fileList.add(new CloudFile(dir.toPath().relativize(file.toPath()).toString(), file.length(), file.isDirectory()));
+                clientList.add(new CloudFile(dir.toPath().relativize(file.toPath()).toString(), file.length(), file.isDirectory()));
             }
         }
 
-        fileList.sort(getCloudFileComparator());
+        clientList.sort(getCloudFileComparator());
+    }
 
-        return fileList;
+    public void updateServerFiles(ResponseLs response) {
+        serverList.clear();
+
+        response.getFiles().forEach(f -> {
+            Path relativePath = Paths.get(serverPath.get()).relativize(Paths.get(f.getRelativePath()));
+            serverList.add(new CloudFile(relativePath.toString(), f.getFileSize(), f.isDirectory()));
+        });
+
+        serverList.sort(getCloudFileComparator());
     }
 
     private Comparator<CloudFile> getCloudFileComparator() {
