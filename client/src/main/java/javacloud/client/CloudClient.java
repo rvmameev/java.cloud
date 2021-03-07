@@ -12,6 +12,7 @@ import io.netty.handler.codec.serialization.ObjectDecoder;
 import javacloud.client.events.ClientEventHandler;
 import javacloud.client.handlers.ClientAuthHandler;
 import javacloud.client.handlers.ClientCommandHandler;
+import javacloud.shared.utils.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -63,7 +64,7 @@ public class CloudClient {
             e.printStackTrace();
         } finally {
             synchronized (channelLocker) {
-                if (channel != null){
+                if (channel != null) {
                     clientEventHandler.afterDisconnect(channel);
                 }
 
@@ -77,7 +78,7 @@ public class CloudClient {
         return config;
     }
 
-    public ClientEventHandler getClientEvents() {
+    public ClientEventHandler getEventHandler() {
         return clientEventHandler;
     }
 
@@ -97,6 +98,10 @@ public class CloudClient {
 
     public boolean isConnected() {
         return getChannel() != null;
+    }
+
+    public boolean isAuthenticated() {
+        return !StringUtils.isNullOrEmpty(ClientAuthManager.getToken());
     }
 
     private void initClientDirectory() throws IOException {

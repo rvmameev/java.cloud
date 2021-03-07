@@ -32,10 +32,6 @@ public class CloudFile implements Serializable {
 
     @Override
     public String toString() {
-        return "CloudFile{" +
-            "localPath='" + relativePath + '\'' +
-            ", fileSize=" + fileSize +
-            ", isDirectory=" + isDirectory +
-            '}';
+        return String.format("%s\t%s\t%d", isDirectory ? "DIR" : "FILE", relativePath, fileSize);
     }
 }

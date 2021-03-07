@@ -42,7 +42,7 @@ public class TestClientEventHandler implements ClientEventHandler {
     }
 
     @Override
-    public void receiveCommandAuth(Channel channel, ResponseAuth response) throws Exception {
+    public void receiveCommandAuth(Channel channel, ResponseAuth response) {
         innerEvents.receiveCommandAuth(channel, response);
 
         System.out.println(String.format("Received token from server (%s)", response.getToken()));

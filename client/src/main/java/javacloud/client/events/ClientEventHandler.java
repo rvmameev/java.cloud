@@ -11,7 +11,7 @@ public interface ClientEventHandler {
 
     void afterDisconnect(Channel channel);
 
-    void receiveCommandAuth(Channel channel, ResponseAuth response) throws Exception;
+    void receiveCommandAuth(Channel channel, ResponseAuth response);
 
     void receiveCommandLs(Channel channel, ResponseLs response);
 

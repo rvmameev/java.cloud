@@ -7,12 +7,11 @@ import javacloud.shared.response.ResponseAuth;
 import javacloud.shared.response.ResponseGetFile;
 import javacloud.shared.response.ResponseLs;
 import javacloud.shared.response.ResponsePutFile;
-import javacloud.shared.utils.StringUtils;
 
-public class ClientEventHandlerImpl implements ClientEventHandler {
+public class ClientEventDefaultHandler implements ClientEventHandler {
     private final ClientConfig config;
 
-    public ClientEventHandlerImpl(ClientConfig config) {
+    public ClientEventDefaultHandler(ClientConfig config) {
         this.config = config;
     }
 
@@ -23,15 +22,11 @@ public class ClientEventHandlerImpl implements ClientEventHandler {
 
     @Override
     public void afterDisconnect(Channel channel) {
-
+        ClientAuthManager.setToken(null);
     }
 
     @Override
-    public void receiveCommandAuth(Channel channel, ResponseAuth response) throws Exception {
-        if (StringUtils.isNullOrEmpty(response.getToken())) {
-            throw new Exception("Auth error");
-        }
-
+    public void receiveCommandAuth(Channel channel, ResponseAuth response) {
         ClientAuthManager.setToken(response.getToken());
     }
 

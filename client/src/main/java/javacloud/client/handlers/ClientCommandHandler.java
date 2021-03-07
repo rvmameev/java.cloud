@@ -17,7 +17,7 @@ public class ClientCommandHandler extends SimpleChannelInboundHandler<Response> 
 
     @Override
     protected void channelRead0(ChannelHandlerContext context, Response response) throws Exception {
-        ClientEventHandler clientEventHandler = client.getClientEvents();
+        ClientEventHandler clientEventHandler = client.getEventHandler();
 
         switch (response.getCommand()) {
             case AUTH: {

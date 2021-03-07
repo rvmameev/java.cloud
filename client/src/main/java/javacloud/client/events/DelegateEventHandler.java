@@ -26,7 +26,7 @@ public abstract class DelegateEventHandler implements ClientEventHandler {
     }
 
     @Override
-    public void receiveCommandAuth(Channel channel, ResponseAuth response) throws Exception {
+    public void receiveCommandAuth(Channel channel, ResponseAuth response) {
         innerHandler.receiveCommandAuth(channel, response);
     }
 

@@ -18,7 +18,7 @@ public class ResponseLs extends Response {
         files.add(file);
     }
 
-    public Iterable<CloudFile> getFiles() {
+    public List<CloudFile> getFiles() {
         return Collections.unmodifiableList(files);
     }
 }

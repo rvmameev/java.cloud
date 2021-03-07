@@ -19,7 +19,7 @@ public class ClientApp extends Application {
         primaryStage.setOnCloseRequest(req -> {
             Channel channel = controller.getCloudClient().getChannel();
 
-            if (channel != null){
+            if (channel != null) {
                 channel.close();
             }
         });

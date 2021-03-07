@@ -1,58 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.VBox?>
-
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javacloud.client.ClientController">
-  <children>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0"
+      prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="javacloud.client.ClientController">
     <MenuBar VBox.vgrow="NEVER">
-      <menus>
-        <Menu mnemonicParsing="false" text="File">
-          <items>
-            <MenuItem mnemonicParsing="false" onAction="#menuConnect" text="Connect" />
-                  <MenuItem mnemonicParsing="false" onAction="#menuDisconnect" text="Disconnect" />
-            <MenuItem mnemonicParsing="false" text="Quit" />
-          </items>
-        </Menu>
-        <Menu mnemonicParsing="false" text="Help">
-          <items>
-            <MenuItem mnemonicParsing="false" text="About MyHelloApp" />
-          </items>
-        </Menu>
-      </menus>
+        <menus>
+            <Menu mnemonicParsing="false" text="Cloud server">
+                <items>
+                    <MenuItem mnemonicParsing="false" onAction="#menuConnect" text="Connect"/>
+                    <MenuItem mnemonicParsing="false" onAction="#menuAuthenticate" text="Authenticate"/>
+                    <MenuItem mnemonicParsing="false" onAction="#menuDisconnect" text="Disconnect"/>
+                    <MenuItem mnemonicParsing="false" onAction="#menuQuit" text="Quit"/>
+                </items>
+            </Menu>
+        </menus>
     </MenuBar>
     <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
-         <children>
-            <HBox prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-               <children>
-                  <Pane prefHeight="575.0" prefWidth="270.0">
-                     <children>
-                        <ListView fx:id="serverList" prefHeight="575.0" prefWidth="270.0" />
-                     </children>
-                  </Pane>
-                  <Pane prefHeight="575.0" prefWidth="129.0">
-                     <children>
-                        <Button fx:id="getButton" layoutX="16.0" layoutY="163.0" mnemonicParsing="false" onAction="#getButtonClick" prefHeight="25.0" prefWidth="98.0" text="get file" />
-                        <Button fx:id="putButton" layoutX="16.0" layoutY="207.0" mnemonicParsing="false" onAction="#putButtonClick" prefHeight="25.0" prefWidth="98.0" text="put file" />
-                     </children>
-                  </Pane>
-                  <Pane layoutX="368.0" layoutY="10.0" prefHeight="575.0" prefWidth="274.0">
-                     <children>
-                        <ListView fx:id="clientList" prefHeight="575.0" prefWidth="274.0" />
-                     </children>
-                  </Pane>
-                  <TextArea fx:id="logText" editable="false" prefHeight="575.0" prefWidth="229.0" />
-               </children>
-            </HBox>
-         </children>
+        <HBox prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <Pane prefHeight="575.0" prefWidth="270.0">
+                <VBox>
+                    <HBox>
+                        <Label text="Server path: "/>
+                        <Label fx:id="serverPathLabel"/>
+                    </HBox>
+                    <ListView fx:id="serverList" prefHeight="552.0" prefWidth="270.0"/>
+                </VBox>
+            </Pane>
+            <Pane prefHeight="575.0" prefWidth="129.0">
+                <Button fx:id="getButton" layoutX="16.0" layoutY="163.0" mnemonicParsing="false"
+                        onAction="#getButtonClick" prefHeight="25.0" prefWidth="98.0"
+                        text="&gt;&gt; get file &gt;&gt;"/>
+                <Button fx:id="putButton" layoutX="16.0" layoutY="207.0" mnemonicParsing="false"
+                        onAction="#putButtonClick" prefHeight="25.0" prefWidth="98.0"
+                        text="&lt;&lt; put file &lt;&lt;"/>
+            </Pane>
+            <Pane layoutX="368.0" layoutY="10.0" prefHeight="575.0" prefWidth="274.0">
+                <VBox>
+                    <HBox>
+                        <Label text="Client path: "/>
+                        <Label fx:id="clientPathLabel"/>
+                    </HBox>
+                    <ListView fx:id="clientList" prefHeight="554.0" prefWidth="274.0"/>
+                </VBox>
+            </Pane>
+            <TextArea fx:id="logText" editable="false" prefHeight="575.0" prefWidth="229.0"/>
+        </HBox>
     </AnchorPane>
-  </children>
 </VBox>
