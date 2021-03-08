@@ -77,14 +77,24 @@ public class CloudServer {
         User user = SQLHandler.getUser(username, password);
 
         if (user != null) {
-            return UUID.randomUUID().toString();
+            String token = UUID.randomUUID().toString();
+
+            SQLHandler.updateToken(user.getUserName(), token);
+
+            return token;
         }
 
         return null;
     }
 
     public String getUserPath(String token) throws IOException {
-        Path path = Paths.get(serverConfig.getServerDataDirectory(), "user1");
+        User user = SQLHandler.getUser(token);
+
+        if (user == null) {
+            return null;
+        }
+
+        Path path = Paths.get(serverConfig.getServerDataDirectory(), user.getUserName());
 
         if (!Files.exists(path)) {
             Files.createDirectory(path);

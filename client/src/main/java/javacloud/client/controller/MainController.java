@@ -82,10 +82,6 @@ public class MainController implements Initializable {
     }
 
     public void commandUpdateServerFiles() {
-        if (!cloudClient.isAuthenticated()) {
-            return;
-        }
-
         cloudClient.getChannel().writeAndFlush(new RequestLs(serverPath.get()));
     }
 
@@ -191,10 +187,18 @@ public class MainController implements Initializable {
     }
 
     public void serverRefreshButtonClick(ActionEvent actionEvent) {
+        if (!cloudClient.isAuthenticated()) {
+            return;
+        }
+
         commandUpdateServerFiles();
     }
 
     public void serverUpButtonClick(ActionEvent actionEvent) {
+        if (!cloudClient.isAuthenticated()) {
+            return;
+        }
+
         Path parent = Paths.get(serverPath.get()).getParent();
 
         if (parent == null) {
