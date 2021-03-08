@@ -28,6 +28,7 @@ public class ControllerEventHandler extends ClientEventDefaultHandler {
 
         Platform.runLater(() -> {
             controller.addLogText("Connected to " + channel.remoteAddress());
+            controller.menuAuthenticate(null);
         });
     }
 

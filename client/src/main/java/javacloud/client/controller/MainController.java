@@ -145,32 +145,37 @@ public class MainController implements Initializable {
         new Thread(() -> cloudClient.connect()).start();
     }
 
-    public void menuAuthenticate(ActionEvent actionEvent) throws IOException {
+    public void menuAuthenticate(ActionEvent actionEvent) {
         if (!cloudClient.isConnected() || cloudClient.isAuthenticated()) {
             return;
         }
 
-        Stage window = new Stage();
-        window.initModality(Modality.APPLICATION_MODAL);
-        window.setTitle("Authenticate");
-        window.initStyle(StageStyle.UTILITY);
+        try {
+            Stage window = new Stage();
+            window.initModality(Modality.APPLICATION_MODAL);
+            window.setTitle("Authenticate");
+            window.initStyle(StageStyle.UTILITY);
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("../auth.fxml"));
-        Parent root = loader.load();
-        AuthController authController = loader.getController();
-        window.setScene(new Scene(root));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../auth.fxml"));
+            Parent root = null;
+            root = loader.load();
+            AuthController authController = loader.getController();
+            window.setScene(new Scene(root));
 
-        window.setOnShown(event -> {
-            Stage stage = getStage();
-            window.setX(stage.getX() + (stage.getWidth() - window.getWidth()) / 2);
-            window.setY(stage.getY() + (stage.getHeight() - window.getHeight()) / 2);
-        });
-        window.showAndWait();
+            window.setOnShown(event -> {
+                Stage stage = getStage();
+                window.setX(stage.getX() + (stage.getWidth() - window.getWidth()) / 2);
+                window.setY(stage.getY() + (stage.getHeight() - window.getHeight()) / 2);
+            });
+            window.showAndWait();
 
-        Pair<String, String> closeResult = authController.CloseResult();
+            Pair<String, String> closeResult = authController.CloseResult();
 
-        if (closeResult != null) {
-            commandAuthenticate(closeResult.getKey(), closeResult.getValue());
+            if (closeResult != null) {
+                commandAuthenticate(closeResult.getKey(), closeResult.getValue());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
