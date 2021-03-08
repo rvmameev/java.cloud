@@ -1,5 +1,8 @@
 package javacloud.server;
 
+import java.io.InputStream;
+import java.util.Properties;
+
 public class ServerConfig {
 
     private int port;
@@ -7,7 +10,7 @@ public class ServerConfig {
     private int filePacketSize;
 
     private String dbDriver;
-    private String dbConnectionString;
+    private String dbConnectionUrl;
 
     private ServerConfig() {
     }
@@ -18,13 +21,21 @@ public class ServerConfig {
     static {
         instance = new ServerConfig();
 
-        // TODO load config from properties file
-        instance.port = 1180;
-        instance.serverDataDirectory = "./data/server";
-        instance.filePacketSize = 10;
+        Properties properties = new Properties();
+        try (InputStream inputStream = instance.getClass().getResourceAsStream("app.properties")) {
+            properties.load(inputStream);
 
-        instance.dbDriver = "org.sqlite.JDBC";
-        instance.dbConnectionString = "jdbc:sqlite:server/database.db";
+            instance.port = Integer.parseInt(properties.getProperty("server.port"));
+            instance.serverDataDirectory = properties.getProperty("server.dir");
+            instance.filePacketSize = Integer.parseInt(properties.getProperty("server.file-packet-size"));
+
+            instance.dbDriver = properties.getProperty("db.driver");
+            instance.dbConnectionUrl = properties.getProperty("db.connection-url");
+        } catch (Exception e) {
+            throw new RuntimeException("Config load error", e);
+        }
+
+        // TODO load config from properties file
     }
 
     public static ServerConfig get() {
@@ -47,7 +58,7 @@ public class ServerConfig {
         return dbDriver;
     }
 
-    public String getDbConnectionString() {
-        return dbConnectionString;
+    public String getDbConnectionUrl() {
+        return dbConnectionUrl;
     }
 }

@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0"
       prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="javacloud.client.ClientController">
+      fx:controller="javacloud.client.controller.MainController">
     <MenuBar VBox.vgrow="NEVER">
         <menus>
             <Menu mnemonicParsing="false" text="Cloud server">
@@ -18,9 +18,9 @@
         </menus>
     </MenuBar>
     <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
-        <HBox prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+        <HBox prefHeight="-1" prefWidth="-1" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
               AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-            <Pane prefHeight="575.0" prefWidth="270.0">
+            <Pane prefHeight="575.0" prefWidth="-1">
                 <VBox>
                     <HBox>
                         <Button text="Refresh" prefWidth="60" onAction="#serverRefreshButtonClick"/>
@@ -30,19 +30,19 @@
                         <Label text="Server path: "/>
                         <Label fx:id="serverPathLabel"/>
                     </HBox>
-                    <ListView fx:id="serverListView" prefHeight="552.0" prefWidth="270.0"
+                    <ListView fx:id="serverListView" prefHeight="550.0" prefWidth="270.0"
                               onMouseClicked="#serverListMouseClicked"/>
                 </VBox>
             </Pane>
-            <Pane prefHeight="575.0" prefWidth="129.0">
-                <Button fx:id="getButton" layoutX="16.0" layoutY="163.0" mnemonicParsing="false"
-                        onAction="#getButtonClick" prefHeight="25.0" prefWidth="98.0"
+            <Pane prefHeight="575.0" prefWidth="-1">
+                <Button fx:id="getButton" layoutX="0" layoutY="163.0" mnemonicParsing="false"
+                        onAction="#getButtonClick" prefHeight="25.0" prefWidth="95.0"
                         text="&gt;&gt; get file &gt;&gt;"/>
-                <Button fx:id="putButton" layoutX="16.0" layoutY="207.0" mnemonicParsing="false"
-                        onAction="#putButtonClick" prefHeight="25.0" prefWidth="98.0"
+                <Button fx:id="putButton" layoutX="0" layoutY="207.0" mnemonicParsing="false"
+                        onAction="#putButtonClick" prefHeight="25.0" prefWidth="95.0"
                         text="&lt;&lt; put file &lt;&lt;"/>
             </Pane>
-            <Pane layoutX="368.0" layoutY="10.0" prefHeight="575.0" prefWidth="274.0">
+            <Pane prefHeight="575.0" prefWidth="-1">
                 <VBox>
                     <HBox>
                         <Button text="Refresh" prefWidth="60" onAction="#clientRefreshButtonClick"/>
@@ -52,11 +52,11 @@
                         <Label text="Client path: "/>
                         <Label fx:id="clientPathLabel"/>
                     </HBox>
-                    <ListView fx:id="clientListView" prefHeight="554.0" prefWidth="274.0"
+                    <ListView fx:id="clientListView" prefHeight="550.0" prefWidth="274.0" HBox.hgrow="ALWAYS"
                               onMouseClicked="#clientListMouseClicked"/>
                 </VBox>
             </Pane>
-            <TextArea fx:id="logText" editable="false" prefHeight="575.0" prefWidth="229.0"/>
+            <TextArea fx:id="logText" editable="false" prefHeight="575.0" prefWidth="260.0"/>
         </HBox>
     </AnchorPane>
 </VBox>

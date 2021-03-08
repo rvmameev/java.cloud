@@ -1,6 +1,8 @@
-package javacloud.client;
+package javacloud.client.controller;
 
 import io.netty.channel.Channel;
+import javacloud.client.ClientConfig;
+import javacloud.client.CloudClient;
 import javacloud.client.events.ClientEventHandler;
 import javacloud.client.events.ControllerEventHandler;
 import javacloud.shared.model.CloudFile;
@@ -14,12 +16,18 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.util.Pair;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +38,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.ResourceBundle;
 
-public class ClientController implements Initializable {
+public class MainController implements Initializable {
     public ListView serverListView;
     public ListView clientListView;
     public TextArea logText;
@@ -62,34 +70,18 @@ public class ClientController implements Initializable {
         updateClientFiles();
     }
 
-    //region Actions
-    public void actionConnect() {
-        if (cloudClient.isConnected()) {
-            return;
-        }
+    //region Commands
 
-        new Thread(() -> cloudClient.connect()).start();
-    }
-
-    public void actionDisconnect() {
-        if (cloudClient.isConnected()) {
-            cloudClient.getChannel().close();
-        }
-
-        serverList.clear();
-    }
-
-    public void actionAuthenticate() {
+    public void commandAuthenticate(String username, String password) {
         if (!cloudClient.isConnected()) {
             return;
         }
 
-        ClientConfig clientConfig = cloudClient.getConfig();
-        RequestAuth request = new RequestAuth(clientConfig.getUsername(), clientConfig.getPassword());
+        RequestAuth request = new RequestAuth(username, password);
         cloudClient.getChannel().writeAndFlush(request);
     }
 
-    public void actionUpdateServerFiles() {
+    public void commandUpdateServerFiles() {
         if (!cloudClient.isAuthenticated()) {
             return;
         }
@@ -97,7 +89,7 @@ public class ClientController implements Initializable {
         cloudClient.getChannel().writeAndFlush(new RequestLs(serverPath.get()));
     }
 
-    public void actionGetFile() {
+    public void commandGetFile() {
         if (!cloudClient.isAuthenticated()) {
             return;
         }
@@ -111,7 +103,7 @@ public class ClientController implements Initializable {
         cloudClient.getChannel().writeAndFlush(new RequestGetFile(Paths.get(serverPath.get(), cloudFile.getRelativePath()).toString()));
     }
 
-    public void actionPutFile() {
+    public void commandPutFile() {
         if (!cloudClient.isAuthenticated()) {
             return;
         }
@@ -138,45 +130,68 @@ public class ClientController implements Initializable {
             addLogText(String.format("Send file packet '%s' %d/%d", relativeFilePath, i + 1, filePacketCount));
         }
     }
-
-    public void actionClose() {
-        Channel channel = cloudClient.getChannel();
-
-        if (channel != null) {
-            channel.close();
-        }
-
-        ((Stage) logText.getScene().getWindow()).close();
-    }
     //endregion
 
     //region Control actions
     public void getButtonClick(ActionEvent actionEvent) {
-        actionGetFile();
+        commandGetFile();
     }
 
     public void putButtonClick(ActionEvent actionEvent) {
-        actionPutFile();
+        commandPutFile();
     }
 
     public void menuConnect(ActionEvent actionEvent) {
-        actionConnect();
+        if (cloudClient.isConnected()) {
+            return;
+        }
+
+        new Thread(() -> cloudClient.connect()).start();
     }
 
-    public void menuAuthenticate(ActionEvent actionEvent) {
-        actionAuthenticate();
+    public void menuAuthenticate(ActionEvent actionEvent) throws IOException {
+        if (!cloudClient.isConnected() || cloudClient.isAuthenticated()) {
+            return;
+        }
+
+        Stage window = new Stage();
+        window.initModality(Modality.APPLICATION_MODAL);
+        window.setTitle("Authenticate");
+        window.initStyle(StageStyle.UTILITY);
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../auth.fxml"));
+        Parent root = loader.load();
+        AuthController authController = loader.getController();
+        window.setScene(new Scene(root));
+
+        window.setOnShown(event -> {
+            Stage stage = getStage();
+            window.setX(stage.getX() + (stage.getWidth() - window.getWidth()) / 2);
+            window.setY(stage.getY() + (stage.getHeight() - window.getHeight()) / 2);
+        });
+        window.showAndWait();
+
+        Pair<String, String> closeResult = authController.CloseResult();
+
+        if (closeResult != null) {
+            commandAuthenticate(closeResult.getKey(), closeResult.getValue());
+        }
     }
 
     public void menuDisconnect(ActionEvent actionEvent) {
-        actionDisconnect();
+        if (cloudClient.isConnected()) {
+            cloudClient.getChannel().close();
+        }
+
+        serverList.clear();
     }
 
     public void menuQuit(ActionEvent actionEvent) {
-        actionClose();
+        stageClose();
     }
 
     public void serverRefreshButtonClick(ActionEvent actionEvent) {
-        actionUpdateServerFiles();
+        commandUpdateServerFiles();
     }
 
     public void serverUpButtonClick(ActionEvent actionEvent) {
@@ -188,7 +203,7 @@ public class ClientController implements Initializable {
 
         serverPath.set(parent.toString());
 
-        actionUpdateServerFiles();
+        commandUpdateServerFiles();
     }
 
     public void serverListMouseClicked(MouseEvent mouseEvent) {
@@ -204,7 +219,7 @@ public class ClientController implements Initializable {
 
         serverPath.set(Paths.get(serverPath.get(), cloudFile.getRelativePath()).toString());
 
-        actionUpdateServerFiles();
+        commandUpdateServerFiles();
     }
 
     public void clientRefreshButtonClick(ActionEvent actionEvent) {
@@ -236,6 +251,16 @@ public class ClientController implements Initializable {
     }
     //endregion
 
+    public void stageClose() {
+        Channel channel = cloudClient.getChannel();
+
+        if (channel != null) {
+            channel.close();
+        }
+
+        getStage().close();
+    }
+
     public void addLogText(String text) {
         logText.appendText(text + System.lineSeparator());
     }
@@ -265,6 +290,10 @@ public class ClientController implements Initializable {
         });
 
         serverList.sort(getCloudFileComparator());
+    }
+
+    private Stage getStage() {
+        return (Stage) logText.getScene().getWindow();
     }
 
     private Comparator<CloudFile> getCloudFileComparator() {

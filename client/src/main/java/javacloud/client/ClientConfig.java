@@ -1,27 +1,30 @@
 package javacloud.client;
 
+import java.io.InputStream;
+import java.util.Properties;
+
 public class ClientConfig {
     private String server;
     private int port;
     private String clientDirectory;
     private int filePacketSize;
 
-    private String username;
-    private String password;
-
     private static ClientConfig instance;
 
     static {
         instance = new ClientConfig();
 
-        // TODO load config from properties file
-        instance.server = "localhost";
-        instance.port = 1180;
-        instance.clientDirectory = "./data/client";
-        instance.filePacketSize = 11;
+        Properties properties = new Properties();
+        try (InputStream inputStream = instance.getClass().getResourceAsStream("app.properties")) {
+            properties.load(inputStream);
 
-        instance.username = "user1";
-        instance.password = "pass1";
+            instance.server = properties.getProperty("cloud.server");
+            instance.port = Integer.parseInt(properties.getProperty("cloud.port"));
+            instance.clientDirectory = properties.getProperty("client.dir");
+            instance.filePacketSize = Integer.parseInt(properties.getProperty("client.file-packet-size"));
+        } catch (Exception e) {
+            throw new RuntimeException("Config load error", e);
+        }
     }
 
     private ClientConfig() {
@@ -45,13 +48,5 @@ public class ClientConfig {
 
     public int getFilePacketSize() {
         return filePacketSize;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
     }
 }

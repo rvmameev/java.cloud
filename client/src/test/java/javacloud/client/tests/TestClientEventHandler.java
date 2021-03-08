@@ -33,7 +33,7 @@ public class TestClientEventHandler implements ClientEventHandler {
         System.out.println("Connected to server " + channel.remoteAddress());
 
         System.out.println("Auth to server");
-        channel.writeAndFlush(new RequestAuth(clientConfig.getUsername(), clientConfig.getPassword()));
+        channel.writeAndFlush(new RequestAuth("user1", "pass1"));
     }
 
     @Override

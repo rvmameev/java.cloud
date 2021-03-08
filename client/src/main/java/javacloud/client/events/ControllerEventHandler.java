@@ -2,7 +2,7 @@ package javacloud.client.events;
 
 import io.netty.channel.Channel;
 import javacloud.client.ClientConfig;
-import javacloud.client.ClientController;
+import javacloud.client.controller.MainController;
 import javacloud.shared.model.CloudFilePacket;
 import javacloud.shared.response.ResponseAuth;
 import javacloud.shared.response.ResponseGetFile;
@@ -14,9 +14,9 @@ import javafx.application.Platform;
 import java.util.Objects;
 
 public class ControllerEventHandler extends ClientEventDefaultHandler {
-    private final ClientController controller;
+    private final MainController controller;
 
-    public ControllerEventHandler(ClientController controller, ClientConfig config) {
+    public ControllerEventHandler(MainController controller, ClientConfig config) {
         super(config);
 
         this.controller = Objects.requireNonNull(controller);
@@ -28,7 +28,6 @@ public class ControllerEventHandler extends ClientEventDefaultHandler {
 
         Platform.runLater(() -> {
             controller.addLogText("Connected to " + channel.remoteAddress());
-            controller.actionAuthenticate();
         });
     }
 
@@ -50,7 +49,7 @@ public class ControllerEventHandler extends ClientEventDefaultHandler {
                 controller.addLogText("Authentication error");
             } else {
                 controller.addLogText("Authentication successful");
-                controller.actionUpdateServerFiles();
+                controller.commandUpdateServerFiles();
             }
         });
     }

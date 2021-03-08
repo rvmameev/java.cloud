@@ -12,10 +12,10 @@ public class SQLHandler {
     public static void connect() {
         try {
             Class.forName(ServerConfig.get().getDbDriver());
-            connection = DriverManager.getConnection(ServerConfig.get().getDbConnectionString());
+            connection = DriverManager.getConnection(ServerConfig.get().getDbConnectionUrl());
             statement = connection.createStatement();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException("Database connection error", e);
         }
     }
 

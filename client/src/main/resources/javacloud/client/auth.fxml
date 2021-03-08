@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="javacloud.client.controller.AuthController">
+    <padding>
+        <Insets topRightBottomLeft="10"/>
+    </padding>
+    <GridPane hgap="5" vgap="5">
+        <Label text="User name" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <TextField fx:id="loginField" prefWidth="150" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        <Label text="Password" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <PasswordField fx:id="passwordField" prefWidth="150" GridPane.columnIndex="1" GridPane.rowIndex="1"
+                       onAction="#loginButtonClick"/>
+    </GridPane>
+    <GridPane vgap="5" hgap="20" alignment="CENTER">
+        <VBox.margin>
+            <Insets top="10"/>
+        </VBox.margin>
+        <Button text="Login" GridPane.columnIndex="0" GridPane.rowIndex="0" onAction="#loginButtonClick"/>
+        <Button text="Cancel" GridPane.columnIndex="1" GridPane.rowIndex="0" onAction="#cancelButtonClick"/>
+    </GridPane>
+</VBox>
